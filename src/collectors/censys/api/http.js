@@ -13,7 +13,7 @@ async function tryRequest(url, httpOptions, rateLimit) {
 				results.success = true;
 				results.request.curl = asCurl(url, httpOptions);
 				results.data = results.response.body.results ? results.response.body.results : results.response.body;
-	
+
 			} else {
 				results.success = false;
 				results.request.curl = asCurl(url, httpOptions);
@@ -22,7 +22,7 @@ async function tryRequest(url, httpOptions, rateLimit) {
 	
 			}
 			if (results.response.status == 429){ // exceeded rate limit, so sleep and try again
-				// console.log('we hit the rate limit', response.body)
+				console.log('we hit the rate limit')
 				await sleep(rateLimit.delay)
 	
 			} else {
@@ -33,6 +33,7 @@ async function tryRequest(url, httpOptions, rateLimit) {
 		catch(results) {
 			results.success = undefined;
 			results.data = results.error;
+			console.log('error results:', results);
 			// return results;
 		}
 	}

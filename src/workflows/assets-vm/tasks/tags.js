@@ -5,6 +5,9 @@ const xml = _g.require['fast-xml-parser'];
 
 module.exports = async function tags(my){
 
+  const apiBatch = my.argv.apiBatch ? my.argv.apiBatch : 1;
+  const apiDelay = my.argv.apiDelay ? my.argv.apiDelay : 500;
+
   const unmanagedTag = my.argv.unmanagedTag ? my.argv.unmanagedTag : '';
   const managedTag = my.argv.managedTag ? my.argv.managedTag : '';
   const testMode = my.argv.testMode ? true : false;
@@ -57,12 +60,20 @@ module.exports = async function tags(my){
 
   if(unmanagedTag){
     unmanagedArray = testMode ? unmanagedArray.slice(0,20) : unmanagedArray;
-    let pArray = [];
-    unmanagedArray.forEach(async (element) => {
-      pArray.push(my.censys.api.saas.setAssetsHostsTag(`${element}`, `${unmanagedTag}`));
-  
-    });
-    await Promise.allSettled(pArray);
+
+    for(let i = 0; i < unmanagedArray.length; i += apiBatch ){
+      ipsChunk = unmanagedArray.slice(i, i+apiBatch);
+      
+      let pArray = [];
+      ipsChunk.forEach(async (element) => {
+        pArray.push(my.censys.api.saas.setAssetsHostsTag(`${element}`, `${unmanagedTag}`));
+    
+      });
+      await Promise.allSettled(pArray);
+      await sleep(apiDelay);
+
+    }
+
     console.log(`${unmanagedArray.length} host(s) were tagged as unmanaged with ${unmanagedTag}.`);
 
   } else {
@@ -72,18 +83,25 @@ module.exports = async function tags(my){
   
   if(managedTag){
     managedArray = testMode ? managedArray.slice(0,20) : managedArray;
-    pArray = [];
-    managedArray.forEach(async (element) => {
-      pArray.push(my.censys.api.saas.setAssetsHostsTag(`${element}`, `${managedTag}`));
-  
-    });
-    await Promise.allSettled(pArray);
-    console.log(`${managedArray.length} host(s) were tagged as managed with ${managedTag}.`);
 
-    } else {
+    for(let i = 0; i < managedArray.length; i += apiBatch ){
+      ipsChunk = managedArray.slice(i, i+apiBatch);
+
+      pArray = [];
+      ipsChunk.forEach(async (element) => {
+        pArray.push(my.censys.api.saas.setAssetsHostsTag(`${element}`, `${managedTag}`));
+    
+      });
+      await Promise.allSettled(pArray);
+      await sleep(apiDelay);
+    }
+      console.log(`${managedArray.length} host(s) were tagged as managed with ${managedTag}.`);
+  
+  } else {
       console.log(`No host(s) were tagged as managed because --managedTag wasn't specified.`);
   
   }
+  
 
   if (testMode){
     console.log('testMode enabled');
@@ -91,7 +109,11 @@ module.exports = async function tags(my){
 
 }
 
-
+function sleep(ms) {
+  return new Promise( resolve => {
+    setTimeout(resolve, ms);
+  })
+}
 
 
 

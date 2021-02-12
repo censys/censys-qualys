@@ -5,6 +5,9 @@ const xml = _g.require['fast-xml-parser'];
 
 module.exports = async function seeds(my){
 
+  const apiBatch = my.argv.apiBatch ? my.argv.apiBatch : 1;
+  const apiDelay = my.argv.apiDelay ? my.argv.apiDelay : 500;
+
   const seedsLabel = my.argv.seedsLabel ? my.argv.seedsLabel : 'qualys-vm';
   const testMode = my.argv.testMode ? true : false;
 
