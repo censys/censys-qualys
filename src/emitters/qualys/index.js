@@ -35,7 +35,7 @@ module.exports = class {
 			const boundary = form.getBoundary();
 			defaultHeaders['content-type'] = `multipart/form-data; boundary=${boundary}`;
 
-			return httpRequest(`${qualys_api_url}/fo/asset/ip/`, {
+			return httpRequest(`${qualys_api_url}/api/2.0/fo/asset/ip/`, {
 				method: 'POST',
 				headers: {...defaultHeaders},
 				payload: payload
@@ -52,7 +52,7 @@ module.exports = class {
 			const boundary = form.getBoundary();
 			defaultHeaders['content-type'] = `multipart/form-data; boundary=${boundary}`;
 
-			return httpRequest(`${qualys_api_url}/fo/asset/excluded_ip/`, {
+			return httpRequest(`${qualys_api_url}/api/2.0/fo/asset/excluded_ip/`, {
 				method: 'POST',
 				headers: {...defaultHeaders},
 				payload: payload
@@ -68,7 +68,7 @@ module.exports = class {
 			const boundary = form.getBoundary();
 			defaultHeaders['content-type'] = `multipart/form-data; boundary=${boundary}`;
 
-			return httpRequest(`${qualys_api_url}/fo/asset/ip/`, {
+			return httpRequest(`${qualys_api_url}/api/2.0/fo/asset/ip/`, {
 				method: 'POST',
 				headers: {...defaultHeaders},
 				payload: payload
