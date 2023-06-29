@@ -26,6 +26,27 @@ module.exports = class {
 		defaultHeaders.authorization = `Basic ${buf.toString('base64')}`;
 
 		this.addIps = (ips = []) => {
+			// we need to first remove the IPs from the exclusion list in the event they are on there; this happens when a host is associated -> disassociated -> re-associated; if we don't remove the
+			// IPs from the exclusion list, they won't get scanned as expected
+			const removeExcludesForm = new FormData();
+ 			removeExcludesForm.append('action', 'remove');
+ 			removeExcludesForm.append('comment', 'censys_asm');
+ 			removeExcludesForm.append('ips', ips.join());
+			
+			const removeExcludesPayload = removeExcludesForm.getBuffer().toString();
+			const removeExcludesBoundary = removeExcludesForm.getBoundary();
+			defaultHeaders['content-type'] = `multipart/form-data; boundary=${removeExcludesBoundary}`;
+
+			const removeExcludesReq = httpRequest(`${qualys_api_url}/api/2.0/fo/asset/excluded_ip/`, {
+				method: 'POST',
+				headers: {...defaultHeaders},
+				payload: removeExcludesPayload
+			});
+			// ignore failures - it technically fails if the IPs weren't in the exclusion list to begin with so consider that a success
+			// if (!removeExcludesReq.success) {
+			// 	return removeExcludesReq;
+			// }
+
 			const form = new FormData();
  			form.append('action', 'add');
  			form.append('enable_vm', '1');
@@ -57,7 +78,6 @@ module.exports = class {
 				headers: {...defaultHeaders},
 				payload: payload
 			});
-
 		}
 
 		this.listIps = () => {

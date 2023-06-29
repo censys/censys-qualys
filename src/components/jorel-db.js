@@ -81,6 +81,15 @@ function Table(){
 		return objOfColArrays;
 	}
 
+	this.fullRowSetToArray = (objOfColArrays) => {
+		this.rowSet.forEachRow( row => {
+			for (let j in objOfColArrays){
+				objOfColArrays[j].push(row);
+			}
+		});
+		return objOfColArrays;
+	}
+
 	this.clearFilter = () => { this._filter = row => false }
 	this.setFilter = (filterFunc) => { this._filter = filterFunc; }
 	this._filter = row => false;
